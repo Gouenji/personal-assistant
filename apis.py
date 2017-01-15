@@ -3,17 +3,25 @@ import json
 import sys
 
 def fetch_weather(city):
-    try:
-        u = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22{0}%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
-        r = requests.get(u.format(city))
-        r = requests.get(u.format("North Pole"))
-        j = json.loads(r.text)
-        results = j['query']['results']['channel']['item']
-        return results
+    	
+	pp = pprint.PrettyPrinter(indent=4)
+	API_KEY = "9294d3ed0680074c429b6f1e653d8800"     #get the key from openweeathermap.org
+	CITY_NAME = city
+	try:
+	    f = urllib2.urlopen('http://api.openweathermap.org/data/2.5/weather?q=' \
+		            + CITY_NAME + '&units=metric' + '&APPID=' +  API_KEY)
+	    respond_raw = f.read()
+	except:
     except Exception as e:
         print(e)
         sys.stderr.write("Couldn't load current conditions\n")
-        return "Unkonw" # typo?
+        return "Unknown"
+	weather_dict = json.loads(respond_raw)
+	pp.pprint(weather_dict)
+	#", Lat "+str(weather_dict['coord']['lat']) + " Lon "+str(weather_dict['coord']['lon'])+
+	line=('\n\n' +" \n, , "+ weather_dict['weather'][0]['description'] +',minimum temperature: ' + str(weather_dict['main']['temp_min'])+',maximum temperature: ' + str(weather_dict['main']['temp_max'])+', humidity: ' + str(weather_dict['main']['humidity']) + '%.' )
+	print (line)
+    return 
 
 
 def fetch_stocks(ticker):
